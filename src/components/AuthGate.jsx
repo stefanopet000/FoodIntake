@@ -30,11 +30,7 @@ export default function AuthGate({ children }) {
 
   function handleGoogleLogin() {
     setError(null)
-    try {
-      oauthLogin('google')
-    } catch (err) {
-      setError('Failed to start Google login. Please try again.')
-    }
+    oauthLogin('google')
   }
 
   async function handleLogout() {
