@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import AuthGate from './components/AuthGate'
 import { DataProvider } from './context/DataContext'
 import Layout from './components/layout/Layout'
 import Dashboard from './pages/Dashboard'
@@ -17,6 +18,7 @@ import FoodLog from './pages/FoodLog'
 export default function App() {
   return (
     <BrowserRouter>
+      <AuthGate>
       <DataProvider>
         <Routes>
           <Route path="/" element={<Layout />}>
@@ -35,6 +37,7 @@ export default function App() {
           </Route>
         </Routes>
       </DataProvider>
+      </AuthGate>
     </BrowserRouter>
   )
 }
