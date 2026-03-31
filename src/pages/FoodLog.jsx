@@ -812,14 +812,18 @@ function AnalysisTab() {
     const n = Object.keys(byDate).length
     const basePrompt = `You are reviewing ${n} days of detailed food intake data. The goal is to help this person lose weight sustainably while maintaining health and energy levels. Analyze their eating patterns, macro balance, meal timing, and food choices.`
     try {
-      const res = await fetch('/.netlify/functions/food-debate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ data, basePrompt }),
-      })
-      const json = await res.json()
-      if (!res.ok) throw new Error(json.error || 'Analysis failed')
-      setDialog(json.dialog)
+      const accumulated = []
+      for (let step = 1; step <= 5; step++) {
+        const res = await fetch('/.netlify/functions/food-debate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data, basePrompt, step, dialog: accumulated }),
+        })
+        const json = await res.json()
+        if (!res.ok) throw new Error(json.error || 'Analysis failed')
+        accumulated.push(json.message)
+        setDialog([...accumulated])
+      }
     } catch (err) {
       setError(err.message)
     } finally {

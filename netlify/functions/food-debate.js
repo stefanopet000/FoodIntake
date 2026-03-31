@@ -1,114 +1,105 @@
 const Anthropic = require('@anthropic-ai/sdk')
 const OpenAI    = require('openai')
 
-// Orchestrates a 5-round dialog between Claude and ChatGPT on food intake data,
-// ending with a joint conclusion synthesized by Claude.
+const claudeSystem = 'You are a nutrition and weight loss expert in a peer review with a colleague. Be specific, reference actual foods and quantities, and keep responses focused (200–300 words).'
+const openaiSystem = 'You are a nutrition and weight loss expert in a peer review with a colleague. Be specific, reference actual foods and quantities, and keep responses focused (200–300 words).'
+
 exports.handler = async (event) => {
+  if (event.httpMethod !== 'POST') {
+    return { statusCode: 405, body: 'Method Not Allowed' }
+  }
+
   try {
-    const { data, basePrompt } = JSON.parse(event.body)
+    const { data, basePrompt, step, dialog = [] } = JSON.parse(event.body)
 
     const anthropic = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY })
     const openai    = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
-    // Cap data at 100 entries to keep context manageable
-    const entries  = (data || []).slice(0, 100)
-    const dataJson = JSON.stringify(entries, null, 2)
+    const entries    = (data || []).slice(0, 100)
+    const dataJson   = JSON.stringify(entries, null, 2)
+    const sharedContext = `${basePrompt}\n\nFood intake data (${entries.length} entries):\n${dataJson}`
 
-    const sharedContext = `${basePrompt}
+    const c1 = dialog.find(d => d.speaker === 'Claude' && dialog.indexOf(d) === 0)?.content
+    const o2 = dialog.find(d => d.speaker === 'ChatGPT')?.content
+    const c3 = dialog.filter(d => d.speaker === 'Claude')[1]?.content
+    const o4 = dialog.filter(d => d.speaker === 'ChatGPT')[1]?.content
 
-Food intake data (${entries.length} entries):
-${dataJson}`
+    let message
 
-    const claudeSystem = 'You are a nutrition and weight loss expert in a peer review with a colleague. Be specific, reference actual foods and quantities, and keep responses focused (200–300 words).'
-    const openaiSystem = 'You are a nutrition and weight loss expert in a peer review with a colleague. Be specific, reference actual foods and quantities, and keep responses focused (200–300 words).'
+    if (step === 1) {
+      // Claude opens
+      const r = await anthropic.messages.create({
+        model: 'claude-opus-4-6',
+        max_tokens: 600,
+        system: claudeSystem,
+        messages: [{
+          role: 'user',
+          content: `${sharedContext}\n\nProvide your initial assessment of this diet. Highlight 3–4 key insights relevant to weight loss and health. Be specific.`,
+        }],
+      })
+      message = { speaker: 'Claude', content: r.content[0].text }
 
-    const dialog = []
+    } else if (step === 2) {
+      // ChatGPT reviews Claude's opening
+      const r = await openai.chat.completions.create({
+        model: 'gpt-4o',
+        max_tokens: 600,
+        messages: [
+          { role: 'system', content: openaiSystem },
+          { role: 'user', content: `${sharedContext}\n\nYour colleague Claude analyzed this diet and said:\n\n${c1}\n\nReview their points. What do you agree with? What would you add or challenge? Reference specific data.` },
+        ],
+      })
+      message = { speaker: 'ChatGPT', content: r.choices[0].message.content }
 
-    // ── Round 1: Claude opens ──────────────────────────────────────────────────
-    const r1 = await anthropic.messages.create({
-      model: 'claude-opus-4-6',
-      max_tokens: 600,
-      system: claudeSystem,
-      messages: [{
-        role: 'user',
-        content: `${sharedContext}\n\nProvide your initial assessment of this diet. Highlight 3–4 key insights relevant to weight loss and health. Be specific.`,
-      }],
-    })
-    const c1 = r1.content[0].text
-    dialog.push({ speaker: 'Claude', content: c1 })
+    } else if (step === 3) {
+      // Claude responds to ChatGPT
+      const r = await anthropic.messages.create({
+        model: 'claude-opus-4-6',
+        max_tokens: 600,
+        system: claudeSystem,
+        messages: [
+          { role: 'user',      content: `${sharedContext}\n\nYour initial assessment:\n${c1}` },
+          { role: 'assistant', content: c1 },
+          { role: 'user',      content: `ChatGPT reviewed your analysis and said:\n\n${o2}\n\nRespond to the most important points. Where do you agree or see it differently?` },
+        ],
+      })
+      message = { speaker: 'Claude', content: r.content[0].text }
 
-    // ── Round 2: ChatGPT reviews ───────────────────────────────────────────────
-    const r2 = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      max_tokens: 600,
-      messages: [
-        { role: 'system', content: openaiSystem },
-        { role: 'user', content: `${sharedContext}\n\nYour colleague Claude analyzed this diet and said:\n\n${c1}\n\nReview their points. What do you agree with? What would you add or challenge? Reference specific data.` },
-      ],
-    })
-    const o2 = r2.choices[0].message.content
-    dialog.push({ speaker: 'ChatGPT', content: o2 })
+    } else if (step === 4) {
+      // ChatGPT final observations
+      const r = await openai.chat.completions.create({
+        model: 'gpt-4o',
+        max_tokens: 600,
+        messages: [
+          { role: 'system',    content: openaiSystem },
+          { role: 'user',      content: `${sharedContext}\n\nClaude's opening:\n${c1}` },
+          { role: 'assistant', content: o2 },
+          { role: 'user',      content: `Claude responded:\n\n${c3}\n\nAny final observations before we wrap up? Focus on what's most actionable.` },
+        ],
+      })
+      message = { speaker: 'ChatGPT', content: r.choices[0].message.content }
 
-    // ── Round 3: Claude responds ───────────────────────────────────────────────
-    const r3 = await anthropic.messages.create({
-      model: 'claude-opus-4-6',
-      max_tokens: 600,
-      system: claudeSystem,
-      messages: [
-        { role: 'user',      content: `${sharedContext}\n\nYour initial assessment:\n${c1}` },
-        { role: 'assistant', content: c1 },
-        { role: 'user',      content: `ChatGPT reviewed your analysis and said:\n\n${o2}\n\nRespond to the most important points. Where do you agree or see it differently?` },
-      ],
-    })
-    const c3 = r3.content[0].text
-    dialog.push({ speaker: 'Claude', content: c3 })
+    } else if (step === 5) {
+      // Claude synthesizes joint conclusion
+      const r = await anthropic.messages.create({
+        model: 'claude-opus-4-6',
+        max_tokens: 900,
+        system: 'You are a nutrition expert synthesizing a peer discussion into clear, actionable conclusions.',
+        messages: [{
+          role: 'user',
+          content: `Two nutrition experts reviewed this food data and had the following discussion:\n\nClaude: ${c1}\n\nChatGPT: ${o2}\n\nClaude: ${c3}\n\nChatGPT: ${o4}\n\nSynthesize the agreed conclusions into:\n1. **Overall assessment** — one short paragraph\n2. **Top recommendations** — 3–5 specific, actionable steps for weight loss and health (bullet points)\n3. **Priority this week** — the single most impactful change to make right now\n\nBe direct and practical.`,
+        }],
+      })
+      message = { speaker: 'Conclusion', content: r.content[0].text }
 
-    // ── Round 4: ChatGPT final observations ───────────────────────────────────
-    const r4 = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      max_tokens: 600,
-      messages: [
-        { role: 'system',    content: openaiSystem },
-        { role: 'user',      content: `${sharedContext}\n\nClaude's opening:\n${c1}` },
-        { role: 'assistant', content: o2 },
-        { role: 'user',      content: `Claude responded:\n\n${c3}\n\nAny final observations before we wrap up? Focus on what's most actionable.` },
-      ],
-    })
-    const o4 = r4.choices[0].message.content
-    dialog.push({ speaker: 'ChatGPT', content: o4 })
-
-    // ── Round 5: Joint conclusion (Claude synthesizes) ─────────────────────────
-    const r5 = await anthropic.messages.create({
-      model: 'claude-opus-4-6',
-      max_tokens: 900,
-      system: 'You are a nutrition expert synthesizing a peer discussion into clear, actionable conclusions.',
-      messages: [{
-        role: 'user',
-        content: `Two nutrition experts reviewed this food data and had the following discussion:
-
-Claude: ${c1}
-
-ChatGPT: ${o2}
-
-Claude: ${c3}
-
-ChatGPT: ${o4}
-
-Synthesize the agreed conclusions into:
-1. **Overall assessment** — one short paragraph
-2. **Top recommendations** — 3–5 specific, actionable steps for weight loss and health (bullet points)
-3. **Priority this week** — the single most impactful change to make right now
-
-Be direct and practical.`,
-      }],
-    })
-    const conclusion = r5.content[0].text
-    dialog.push({ speaker: 'Conclusion', content: conclusion })
+    } else {
+      return { statusCode: 400, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ error: 'Invalid step (1–5)' }) }
+    }
 
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ dialog }),
+      body: JSON.stringify({ message, done: step === 5 }),
     }
   } catch (err) {
     return {
