@@ -12,6 +12,7 @@ import Correlation from './pages/Correlation'
 import Analysis from './pages/Analysis'
 import AIAnalysis from './pages/AIAnalysis'
 import Upload from './pages/Upload'
+import FoodLog from './pages/FoodLog'
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
             <Route path="analysis" element={<Analysis />} />
             <Route path="ai-analysis" element={<AIAnalysis />} />
             <Route path="upload" element={<Upload />} />
+            <Route path="food-log" element={<FoodLog />} />
           </Route>
         </Routes>
       </DataProvider>

@@ -38,6 +38,7 @@ export const NAV_ITEMS = [
   { path: '/correlation', label: 'Correlation', icon: '🔗' },
   { path: '/analysis', label: 'Analysis & Tips', icon: '💡' },
   { path: '/ai-analysis', label: 'AI Analysis', icon: '🤖' },
+  { path: '/food-log', label: 'Food Log', icon: '🥗' },
   { path: '/upload', label: 'Upload CSV', icon: '📤' },
 ]
 
