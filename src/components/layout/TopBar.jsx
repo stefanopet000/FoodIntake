@@ -8,17 +8,17 @@ export default function TopBar({ onMenuClick }) {
   )
 
   return (
-    <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur border-b border-slate-700/50 px-4 py-3 flex items-center gap-3">
+    <header className="sticky top-0 z-30 bg-white/80 backdrop-blur border-b border-slate-200 px-4 py-3 flex items-center gap-3">
       <button
         onClick={onMenuClick}
-        className="md:hidden text-slate-400 hover:text-slate-200 text-xl p-1"
+        className="md:hidden text-slate-400 hover:text-slate-700 text-xl p-1"
         aria-label="Open menu"
       >
         ☰
       </button>
       <div className="flex items-center gap-2">
         {current && <span className="text-lg">{current.icon}</span>}
-        <h1 className="text-base font-semibold text-slate-100">
+        <h1 className="text-base font-semibold text-slate-800">
           {current?.label || 'FoodTracker'}
         </h1>
       </div>

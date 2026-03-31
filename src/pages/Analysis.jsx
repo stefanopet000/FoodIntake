@@ -30,9 +30,9 @@ export default function Analysis() {
 
   return (
     <div className="space-y-4">
-      <div className="card bg-slate-800/40">
+      <div className="card bg-slate-50">
         <p className="text-sm text-slate-400">
-          <span className="text-slate-200 font-medium">Rule-based analysis</span> across all {allData.length} days of tracked data.
+          <span className="text-slate-700 font-medium">Rule-based analysis</span> across all {allData.length} days of tracked data.
           These insights update automatically as you upload more weeks.
         </p>
       </div>
@@ -44,7 +44,7 @@ export default function Analysis() {
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-2">
               <span className="text-xl">{tip.icon}</span>
-              <h3 className="font-semibold text-slate-100">{tip.title}</h3>
+              <h3 className="font-semibold text-slate-800">{tip.title}</h3>
             </div>
             <Badge severity={tip.severity}>{tip.severity}</Badge>
           </div>

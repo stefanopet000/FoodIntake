@@ -5,8 +5,8 @@ function computeStats(allData) {
   if (!allData || allData.length === 0) return null
 
   const totalDays = allData.length
-  const daysInDeficit = allData.filter((r) => (r.deficit ?? 0) <= 0).length
-  const avgDeficit = avg(allData.map((r) => r.deficit))
+  const daysInDeficit = allData.filter((r) => (r.adj_deficit ?? r.raw_deficit ?? 0) > 0).length
+  const avgDeficit = avg(allData.map((r) => r.adj_deficit ?? r.raw_deficit))
   const avgIntake = avg(allData.map((r) => r.total_caloric_intake))
 
   const totalCarbs = avg(allData.map((r) => r.carbs_g))
@@ -29,21 +29,15 @@ function computeStats(allData) {
 
   const weekendRows = allData.filter((r) => isWeekend(r.day))
   const weekdayRows = allData.filter((r) => !isWeekend(r.day))
-  const weekendAvgDeficit = avg(weekendRows.map((r) => r.deficit))
-  const weekdayAvgDeficit = avg(weekdayRows.map((r) => r.deficit))
+  const weekendAvgDeficit = avg(weekendRows.map((r) => r.adj_deficit ?? r.raw_deficit))
+  const weekdayAvgDeficit = avg(weekdayRows.map((r) => r.adj_deficit ?? r.raw_deficit))
 
-  const avgBMRGap = avg(
-    allData.map((r) =>
-      r.assumption_bmr != null && r.realistic_rounding != null
-        ? r.assumption_bmr - r.realistic_rounding
-        : null
-    )
-  )
+  const avgBMRGap = null // realistic_rounding column removed
 
   // Longest consecutive deficit streak
   let longestStreak = 0, currentStreak = 0
   for (const r of allData) {
-    if ((r.deficit ?? 0) <= 0) {
+    if ((r.adj_deficit ?? r.raw_deficit ?? 0) <= 0) {
       currentStreak++
       longestStreak = Math.max(longestStreak, currentStreak)
     } else {

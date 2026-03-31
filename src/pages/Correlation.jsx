@@ -17,7 +17,7 @@ export default function Correlation() {
   const navigate = useNavigate()
 
   const [metricA, setMetricA] = useState('total_caloric_intake')
-  const [metricB, setMetricB] = useState('deficit')
+  const [metricB, setMetricB] = useState('adj_deficit')
   const [range, setRange] = useState('1m')
   const [customStart, setCustomStart] = useState(format(new Date(), 'yyyy-MM-dd'))
   const [customEnd, setCustomEnd] = useState(format(new Date(), 'yyyy-MM-dd'))
@@ -63,7 +63,7 @@ export default function Correlation() {
     <div className="space-y-6">
       {/* Controls */}
       <div className="card space-y-4">
-        <h3 className="text-sm font-semibold text-slate-300">Correlation Explorer</h3>
+        <h3 className="text-sm font-semibold text-slate-600">Correlation Explorer</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="text-xs text-slate-400 mb-1 block">Metric A (left axis)</label>
@@ -117,12 +117,12 @@ export default function Correlation() {
       {pearsonR !== null && (
         <div className="card space-y-2">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-slate-300">Correlation Analysis</h3>
+            <h3 className="text-sm font-semibold text-slate-600">Correlation Analysis</h3>
             <span className={`text-sm font-bold ${interpretation.color}`}>
               {interpretation.label}
             </span>
           </div>
-          <div className="text-3xl font-bold text-slate-100">
+          <div className="text-3xl font-bold text-slate-800">
             r = {pearsonR.toFixed(3)}
           </div>
           <p className="text-sm text-slate-400">{interpretation.description}</p>

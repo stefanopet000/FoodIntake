@@ -78,7 +78,7 @@ Please interpret what this means for my health and fitness goals. Is this a mean
         {/* Provider toggle */}
         <div>
           <label className="text-xs text-slate-400 mb-2 block">AI Provider</label>
-          <div className="flex bg-slate-700 rounded-lg p-1 gap-1 w-fit">
+          <div className="flex bg-slate-100 rounded-lg p-1 gap-1 w-fit">
             {[{ value: 'claude', label: '🟠 Claude' }, { value: 'openai', label: '🟢 ChatGPT' }].map((p) => (
               <button
                 key={p.value}
@@ -86,7 +86,7 @@ Please interpret what this means for my health and fitness goals. Is this a mean
                 className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${
                   provider === p.value
                     ? 'bg-emerald-600 text-white'
-                    : 'text-slate-400 hover:text-slate-200'
+                    : 'text-slate-400 hover:text-slate-700'
                 }`}
               >
                 {p.label}
@@ -106,8 +106,8 @@ Please interpret what this means for my health and fitness goals. Is this a mean
                 disabled={o.value === 'correlation' && !correlationState}
                 className={`px-3 py-1 rounded-lg text-sm font-medium border transition-colors disabled:opacity-30 disabled:cursor-not-allowed ${
                   context === o.value
-                    ? 'bg-slate-600 border-slate-500 text-slate-100'
-                    : 'border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-600'
+                    ? 'bg-slate-200 border-slate-300 text-slate-800'
+                    : 'border-slate-200 text-slate-500 hover:text-slate-700 hover:border-slate-300'
                 }`}
               >
                 {o.label}
@@ -158,14 +158,14 @@ Please interpret what this means for my health and fitness goals. Is this a mean
       {result && (
         <div className="card space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-slate-300">
+            <h3 className="text-sm font-semibold text-slate-600">
               {provider === 'claude' ? '🟠 Claude' : '🟢 ChatGPT'} Analysis
             </h3>
             <button onClick={handleCopy} className="btn-secondary text-xs py-1">
               {copied ? '✓ Copied' : 'Copy'}
             </button>
           </div>
-          <div className="prose prose-invert prose-sm max-w-none text-slate-300 leading-relaxed">
+          <div className="prose prose-sm max-w-none text-slate-700 leading-relaxed">
             <ReactMarkdown>{result}</ReactMarkdown>
           </div>
         </div>

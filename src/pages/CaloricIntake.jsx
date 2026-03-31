@@ -34,7 +34,7 @@ export default function CaloricIntake() {
       <WeekSelector />
       <div className="grid grid-cols-2 gap-4">
         <MetricCard label="Avg Daily Intake" value={formatKcal(avgIntake ? Math.round(avgIntake) : null)} icon="🍽️" color="text-sky-400" />
-        <MetricCard label="Weekly Total" value={formatKcal(weeklyTotal)} icon="📊" color="text-slate-200" />
+        <MetricCard label="Weekly Total" value={formatKcal(weeklyTotal)} icon="📊" color="text-slate-700" />
       </div>
       <BarChartCard
         title="Daily Caloric Intake"

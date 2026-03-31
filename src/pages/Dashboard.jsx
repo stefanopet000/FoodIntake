@@ -1,5 +1,7 @@
 import { useFoodData } from '../hooks/useFoodData'
 import { useWeeklyStats } from '../hooks/useWeeklyStats'
+import { useData } from '../context/DataContext'
+import { Link } from 'react-router-dom'
 import MetricCard from '../components/ui/MetricCard'
 import AreaChartCard from '../components/charts/AreaChartCard'
 import LineChartCard from '../components/charts/LineChartCard'
@@ -8,17 +10,25 @@ import BarChartCard from '../components/charts/BarChartCard'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import EmptyState from '../components/ui/EmptyState'
 import { formatKcal, formatDeficit, deficitColor } from '../utils/formatters'
+import { avg } from '../utils/statisticsHelpers'
 import { CHART_COLORS } from '../constants'
 
 export default function Dashboard() {
-  const { avgIntake, avgDeficit, exerciseDays, avgBMR, totalCarbs, totalProtein, totalFats, totalMacroG, isLoading, allData } = useFoodData()
+  const { avgIntake, avgAdjDeficit, exerciseDays, totalCarbs, totalProtein, totalFats, rows, isLoading, allData } = useFoodData()
+  const { calculatedBMR } = useData()
   const weeklyStats = useWeeklyStats()
 
   if (isLoading) return <LoadingSpinner />
   if (allData.length === 0) return <EmptyState />
 
   const intakeTrend = weeklyStats.map((w) => ({ date: w.week, avgIntake: w.avgIntake ? Math.round(w.avgIntake) : null }))
-  const deficitTrend = weeklyStats.map((w) => ({ date: w.week, avgDeficit: w.avgDeficit ? Math.round(w.avgDeficit) : null }))
+  const deficitTrend = weeklyStats.map((w) => {
+    const weekRows = allData.filter((r) => r.week_label === w.week)
+    const adjAvg = weekRows.length
+      ? Math.round(weekRows.reduce((s, r) => s + (r.adj_deficit ?? 0), 0) / weekRows.length)
+      : null
+    return { date: w.week, avgAdjDeficit: adjAvg }
+  })
   const exerciseTrend = weeklyStats.map((w) => ({ date: w.week, exerciseDays: w.exerciseDays }))
 
   const macroPie = [
@@ -39,10 +49,10 @@ export default function Dashboard() {
         />
         <MetricCard
           label="Avg Daily Deficit"
-          value={formatDeficit(avgDeficit ? Math.round(avgDeficit) : null)}
+          value={formatDeficit(avgAdjDeficit ? Math.round(avgAdjDeficit) : null)}
           icon="📉"
-          color={deficitColor(avgDeficit)}
-          sub={avgDeficit != null && avgDeficit <= 0 ? 'On track ✓' : 'Surplus'}
+          color={deficitColor(avgAdjDeficit)}
+          sub={avgAdjDeficit != null && avgAdjDeficit > 0 ? 'On track ✓' : 'Surplus'}
         />
         <MetricCard
           label="Exercise Days"
@@ -52,10 +62,11 @@ export default function Dashboard() {
           sub="this week"
         />
         <MetricCard
-          label="Avg BMR"
-          value={formatKcal(avgBMR ? Math.round(avgBMR) : null)}
+          label="True BMR"
+          value={calculatedBMR ? formatKcal(calculatedBMR) : '—'}
           icon="🧬"
           color="text-violet-400"
+          sub={calculatedBMR ? 'Mifflin–St Jeor' : <Link to="/bmr" className="text-emerald-400 underline">Set up →</Link>}
         />
       </div>
 
@@ -67,9 +78,9 @@ export default function Dashboard() {
           series={[{ key: 'avgIntake', label: 'Avg Intake (kcal)', color: CHART_COLORS.intake }]}
         />
         <LineChartCard
-          title="Weekly Avg Deficit Trend"
+          title="Weekly Avg Deficit Trend (adjusted)"
           data={deficitTrend}
-          series={[{ key: 'avgDeficit', label: 'Avg Deficit (kcal)', color: CHART_COLORS.deficit }]}
+          series={[{ key: 'avgAdjDeficit', label: 'Avg Deficit adj. (kcal)', color: CHART_COLORS.deficit }]}
           referenceY={0}
         />
         <PieChartCard

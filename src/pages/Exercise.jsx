@@ -62,7 +62,7 @@ export default function Exercise() {
 
       {/* Exercise/Rest Heatmap */}
       <div className="card">
-        <h3 className="text-sm font-semibold text-slate-300 mb-4">Activity Overview</h3>
+        <h3 className="text-sm font-semibold text-slate-600 mb-4">Activity Overview</h3>
         <div className="flex flex-wrap gap-2">
           {heatmapRows.map((r, i) => (
             <div
@@ -71,7 +71,7 @@ export default function Exercise() {
               className={`flex flex-col items-center justify-center w-16 h-16 rounded-xl text-xs font-medium ${
                 r.isExercise
                   ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                  : 'bg-slate-700/50 text-slate-500 border border-slate-700'
+                  : 'bg-slate-100 text-slate-400 border border-slate-200'
               }`}
             >
               <span className="text-lg">{r.isExercise ? '🏃' : '😴'}</span>

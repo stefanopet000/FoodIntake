@@ -7,13 +7,11 @@ const COLUMN_MAP = {
   'Total kcal': 'total_kcal',
   'Kcal movement': 'kcal_movement',
   'Assumption BMR': 'assumption_bmr',
-  'Realistic rounding': 'realistic_rounding',
   'Total caloric intake': 'total_caloric_intake',
   'Carbs (g)': 'carbs_g',
   'Proteins (g)': 'proteins_g',
   'Fats (g)': 'fats_g',
   'Exercise type': 'exercise_type',
-  'Deficit': 'deficit',
   'Weight (kg)': 'weight_kg',
   'Energy/Mood (1-10)': 'energy_mood',
 }

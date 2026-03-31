@@ -10,8 +10,8 @@ export default function Upload() {
 
   return (
     <div className="space-y-5 max-w-3xl">
-      <div className="card bg-slate-800/40 text-sm text-slate-400 space-y-1">
-        <p className="font-medium text-slate-300">Expected CSV columns:</p>
+      <div className="card bg-slate-50 text-sm text-slate-400 space-y-1">
+        <p className="font-medium text-slate-600">Expected CSV columns:</p>
         <p className="font-mono text-xs text-slate-500 leading-relaxed">
           Date, Day, Total kcal, Kcal movement, Assumption BMR, Realistic rounding,
           Total caloric intake, Carbs (g), Proteins (g), Fats (g), Exercise type, Deficit

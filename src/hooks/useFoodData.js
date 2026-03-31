@@ -14,10 +14,14 @@ export function useFoodData() {
     ).length
     const restDays = totalDays - exerciseDays
 
-    const avgIntake = avg(rows.map((r) => r.total_caloric_intake))
-    const avgDeficit = avg(rows.map((r) => r.deficit))
-    const avgBMR = avg(rows.map((r) => r.assumption_bmr))
-    const avgWeight = avg(rows.map((r) => r.weight_kg))
+    const avgIntake         = avg(rows.map((r) => r.total_caloric_intake))
+    const avgDeficit        = avg(rows.map((r) => r.raw_deficit))       // raw deficit (total kcal − intake)
+    const avgAdjDeficit     = avg(rows.map((r) => r.adj_deficit))       // adjusted (−20% movement)
+    const avgTotalBurned    = avg(rows.map((r) => r.adj_total_burned))  // adjusted total burned
+    const avgBMR            = avg(rows.map((r) => r.assumption_bmr))
+    const avgBasicMovement  = avg(rows.map((r) => r.basic_movement))
+    const avgAdjMovement    = avg(rows.map((r) => r.adj_movement))
+    const avgWeight         = avg(rows.map((r) => r.weight_kg))
     const avgMood = avg(rows.map((r) => r.energy_mood))
 
     const totalCarbs = sum(rows.map((r) => r.carbs_g))
@@ -39,7 +43,11 @@ export function useFoodData() {
       restDays,
       avgIntake,
       avgDeficit,
+      avgAdjDeficit,
+      avgTotalBurned,
       avgBMR,
+      avgBasicMovement,
+      avgAdjMovement,
       avgWeight,
       avgMood,
       totalCarbs,

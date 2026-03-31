@@ -15,13 +15,12 @@ function CustomLabel({ cx, cy, midAngle, innerRadius, outerRadius, percent }) {
 }
 
 export default function PieChartCard({ title, data, height = 280 }) {
-  // data: [{ name, value, color }]
   const total = data.reduce((s, d) => s + (d.value || 0), 0)
   if (total === 0) return null
 
   return (
     <div className="card">
-      {title && <h3 className="text-sm font-semibold text-slate-300 mb-4">{title}</h3>}
+      {title && <h3 className="text-sm font-semibold text-slate-700 mb-4">{title}</h3>}
       <ResponsiveContainer width="100%" height={height}>
         <PieChart>
           <Pie
@@ -39,10 +38,10 @@ export default function PieChartCard({ title, data, height = 280 }) {
             ))}
           </Pie>
           <Tooltip
-            contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: 8 }}
+            contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
             formatter={(value, name) => [`${value.toFixed(1)} g`, name]}
           />
-          <Legend wrapperStyle={{ color: '#94a3b8', fontSize: 12 }} />
+          <Legend wrapperStyle={{ color: '#64748b', fontSize: 12 }} />
         </PieChart>
       </ResponsiveContainer>
     </div>

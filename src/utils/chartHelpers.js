@@ -28,7 +28,7 @@ export function weeklyAverages(allData) {
     return {
       week,
       avgIntake: avg('total_caloric_intake'),
-      avgDeficit: avg('deficit'),
+      avgDeficit: avg('adj_deficit'),
       avgBMR: avg('assumption_bmr'),
       avgCarbs: avg('carbs_g'),
       avgProtein: avg('proteins_g'),

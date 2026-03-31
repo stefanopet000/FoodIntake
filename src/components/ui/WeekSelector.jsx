@@ -7,7 +7,7 @@ export default function WeekSelector() {
 
   return (
     <div className="flex items-center gap-2 mb-4">
-      <label className="text-sm text-slate-400">Week:</label>
+      <label className="text-sm text-slate-500">Week:</label>
       <select
         className="input text-sm"
         value={selectedWeek || ''}

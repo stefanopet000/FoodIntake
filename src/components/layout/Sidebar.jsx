@@ -3,13 +3,13 @@ import { NAV_ITEMS } from '../../constants'
 
 export default function Sidebar() {
   return (
-    <aside className="hidden md:flex flex-col w-56 shrink-0 bg-slate-800/60 border-r border-slate-700/50 h-screen sticky top-0">
-      <div className="px-5 py-5 border-b border-slate-700/50">
+    <aside className="hidden md:flex flex-col w-56 shrink-0 bg-white border-r border-slate-200 h-screen sticky top-0">
+      <div className="px-5 py-5 border-b border-slate-200">
         <div className="flex items-center gap-2">
           <span className="text-2xl">🥗</span>
           <div>
-            <div className="text-sm font-bold text-slate-100">FoodTracker</div>
-            <div className="text-xs text-slate-500">Weekly Insights</div>
+            <div className="text-sm font-bold text-slate-800">FoodTracker</div>
+            <div className="text-xs text-slate-400">Weekly Insights</div>
           </div>
         </div>
       </div>
@@ -22,8 +22,8 @@ export default function Sidebar() {
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors mb-0.5 ${
                 isActive
-                  ? 'bg-emerald-600/20 text-emerald-400'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                  ? 'bg-emerald-50 text-emerald-700'
+                  : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'
               }`
             }
           >
